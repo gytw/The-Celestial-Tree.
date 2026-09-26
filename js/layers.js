@@ -95,7 +95,7 @@ addLayer("p", {
                 return "x" + format(upgradeEffect(this.layer, this.id))
             },
            unlocked() {
-    return hasUpgrade('p', '15')
+    return hasUpgrade('p', '11')
       },
         },
         '13': {
