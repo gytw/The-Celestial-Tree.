@@ -12,12 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.87",
+	num: "V1.05",
 	name: "Literally nothing",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
+	<h3>v1.05</h3><br>
+		- 更多升級與可購買.<br>
+
+    <h3>v0.87</h3><br>
 		- 做了一坨大便升級.<br>
 		- Added stuff.`
 
@@ -38,19 +41,28 @@ function canGenPoints(){
 
 // Calculate points/sec!
 function getPointGen() {
-	if(!canGenPoints())
-		return new Decimal(0)
+    if (!canGenPoints())
+        return new Decimal(0)
 
-	let gain = new Decimal(1)
-	if(hasUpgrade('p', '11')){
-		gain = gain.times(upgradeEffect('p', '11'))
-	}
+    let gain = new Decimal(1)
 
-	if(hasUpgrade('p', '12')){
-		gain = gain.times(upgradeEffect('p', '12'))
-	}
-		return gain
-	}
+    // Upgrade 加成
+    if (hasUpgrade('p', '11')) gain = gain.times(upgradeEffect('p', '11'))
+    if (hasUpgrade('p', '12')) gain = gain.times(upgradeEffect('p', '12'))
+    if (hasUpgrade('p', '14')) gain = gain.times(3)
+    if (hasUpgrade('p', '17')) gain = gain.times(upgradeEffect('p', '17'))
+    // Buyable 加成（改用 buyableEffect('p', 11).first 來正確提取數值）
+    if (player.p && player.p.buyables && player.p.buyables[11]) {
+        let eff = buyableEffect('p', 11)
+        if (eff) {
+            // 判斷 eff 是不是物件，如果是物件就拿 .first，否則直接用 eff
+            let mult = eff.first !== undefined ? eff.first : eff
+            gain = gain.times(mult)
+        }
+    }
+
+    return gain
+}
 
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
