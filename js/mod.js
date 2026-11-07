@@ -12,11 +12,16 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-  num: "V1.05",
-  name: "Literally nothing",
+  num: "1.1",
+  name: "A big layer 'Planet' Part 1",
 };
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.1 A big layer 'Planet' Part 1</h3><br>
+		- 新的層級.<br>
+    - 更多升級與可購買.<br>
+    - 將The Booster V2的加成加強 否則無法遊玩後面的內容.<br>
+
 	<h3>v1.05</h3><br>
 		- 更多升級與可購買.<br>
 
@@ -50,13 +55,17 @@ function getPointGen() {
   if (hasUpgrade("p", "12")) gain = gain.times(upgradeEffect("p", "12"));
   if (hasUpgrade("p", "14")) gain = gain.times(3);
   if (hasUpgrade("p", "21")) gain = gain.times(upgradeEffect("p", "21"));
-  if (hasUpgrade("p", "31")) gain = gain.times(380);
-  if (hasUpgrade("p", "32")) gain = gain.times(1e6);
+  if (hasUpgrade("p", "31")) gain = gain.times(1e7);
+  if (hasUpgrade("p", "32")) gain = gain.times(1e4);
   if (hasUpgrade("p", "33")) gain = gain.times(1e9);
   if (hasUpgrade("p", "23")) gain = gain.times(upgradeEffect("p", "23"));
   if (hasUpgrade("p", "34")) gain = gain.times(1e4);
   if (hasUpgrade("p", "24")) gain = gain.times(upgradeEffect("p", "24"));
   if (hasUpgrade("p", "25")) gain = gain.times(upgradeEffect("p", "25"));
+  if (hasUpgrade("planet", "11")) gain = gain.pow(1.06);
+  if (hasMilestone("planet", "5")) gain = gain.pow(1.025);
+  if (hasUpgrade("planet", "13"))
+    gain = gain.times(upgradeEffect("planet", "13"));
 
   // Buyable 加成（改用 buyableEffect('p', 11).first 來正確提取數值）
   if (player.p && player.p.buyables && player.p.buyables[11]) {
