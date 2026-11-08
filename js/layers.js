@@ -10,6 +10,7 @@ addLayer("p", {
         11: new Decimal(0), // ⭐️ 記得把 11 也補回 startData 裡！
         12: new Decimal(0),
         13: new Decimal(0),
+        14: new Decimal(0),
       },
     };
   },
@@ -23,15 +24,6 @@ addLayer("p", {
   type: "normal",
   exponent: 0.5,
 
-  update(diff) {
-    // 檢查玩家是否擁有 Planet 層級的 2 號里程碑
-    if (hasMilestone("planet", 3)) {
-      // 自動呼叫 TMT 內建的 buyBuyable 函數來購買 buyable 11 與 12
-      buyBuyable("p", 11);
-      buyBuyable("p", 12);
-    }
-  },
-
   // ⭐️ 修正後的 gainMult：統一用 mult 變數累積所有 Star 的加成
   gainMult() {
     let mult = new Decimal(1);
@@ -44,6 +36,20 @@ addLayer("p", {
     if (hasUpgrade("planet", "12")) {
       mult = mult.times(upgradeEffect("planet", "12"));
     }
+    if (hasMilestone("planet", "6")) {
+      mult = mult.times(5);
+    }
+
+    if (hasMilestone("planet", "7")) {
+      mult = mult.times(3);
+    }
+
+    if (hasUpgrade("p", "72")) mult = mult.times(29);
+    if (hasMilestone("planet", 9)) {
+      // 必須用 tmp.P.milestones[3].effect 來抓取數值
+      let milestoneEff = tmp.planet.milestones[9].effect;
+      mult = mult.times(milestoneEff ? milestoneEff : 1);
+    }
 
     // Buyable 12 的 Star 加成
     if (player.p && player.p.buyables && player.p.buyables[12]) {
@@ -53,7 +59,12 @@ addLayer("p", {
         mult = mult.times(effVal);
       }
     }
-
+    if (hasUpgrade("p", "73")) mult = mult.times(4);
+    if (hasUpgrade("p", "62")) mult = mult.times(4);
+    if (hasUpgrade("p", "64")) mult = mult.times(67);
+    if (hasUpgrade("planet", "23")) {
+      mult = mult.times(upgradeEffect("planet", "23"));
+    }
     return mult;
   },
 
@@ -98,6 +109,30 @@ addLayer("p", {
       exp = exp.times(1.025);
     }
 
+    if (hasUpgrade("p", "52")) {
+      exp = exp.times(0.97);
+    }
+
+    if (hasMilestone("planet", "8")) {
+      exp = exp.times(1.04);
+    }
+
+    if (hasUpgrade("p", "53")) {
+      exp = exp.times(0.973);
+    }
+
+    if (hasUpgrade("p", "54")) {
+      exp = exp.times(0.99);
+    }
+
+    if (hasUpgrade("p", "55")) {
+      exp = exp.times(1.01);
+    }
+
+    if (hasUpgrade("atom", "12")) {
+      exp = exp.times(1.05);
+    }
+
     return exp;
   },
 
@@ -121,6 +156,39 @@ addLayer("p", {
     return true;
   },
 
+  autoUpgradeTimer: 0,
+
+  update(diff) {
+    // 1️⃣ 如果擁有星星自己的 13 號升級，自動買星星層級的升級（第 1 到 7 行）
+    if (hasUpgrade("atom", 11)) {
+      for (let r = 1; r <= 7; r++) {
+        for (let c = 1; c <= 7; c++) {
+          let id = r * 10 + c;
+          if (
+            this.upgrades[id] !== undefined &&
+            !hasUpgrade(this.layer, id) &&
+            canAffordUpgrade(this.layer, id)
+          ) {
+            buyUpgrade(this.layer, id);
+          }
+        }
+      }
+    }
+
+    // 2️⃣ 檢查 Planet 的里程碑 3，自動購買星星層級 ("S") 的 11、12 號 Buyables
+    // （這裡的大小寫 "P" 請依你的 Planet 實際代碼為主，確保是大寫或小寫一致）
+    if (hasMilestone("planet", 3)) {
+      buyBuyable("p", 11);
+      buyBuyable("p", 12);
+    }
+
+    // 3️⃣ 檢查 Planet 的里程碑 10，自動購買星星層級 ("S") 的 13、14 號 Buyables
+    if (hasMilestone("planet", 10)) {
+      buyBuyable("p", 13);
+      buyBuyable("p", 14);
+    }
+  },
+
   tabFormat: {
     Main: {
       content: [
@@ -128,7 +196,7 @@ addLayer("p", {
         "prestige-button",
         "blank",
         // ⭐️ 關鍵：把單純的 "upgrades" 改成陣列，限制主畫面只顯示第 1 和第 2 行
-        ["upgrades", [1, 2, 4]],
+        ["upgrades", [1, 2, 4, 6]],
       ],
     },
     Buyables: {
@@ -141,7 +209,7 @@ addLayer("p", {
       content: [
         "blank",
         // 這裡維持只顯示第 3 行（31 號升級）
-        ["upgrades", [3]],
+        ["upgrades", [3, 5, 7]],
       ],
     },
   },
@@ -432,6 +500,146 @@ addLayer("p", {
         return hasUpgrade("p", "42");
       },
     },
+    44: {
+      title: "Points Ahh energy",
+      description: "points^1.05 and Unlock more points Upgrades",
+      cost: new Decimal(1e58),
+      unlocked() {
+        return hasUpgrade("p", "43");
+      },
+    },
+    45: {
+      title: "Planet Ahh energy",
+      description: "mult planet gain by 2 ",
+      cost: new Decimal(1e72),
+      unlocked() {
+        return hasUpgrade("p", "44");
+      },
+    },
+    51: {
+      title: "The booster V5",
+      description: "mult points gain by 2",
+      cost: new Decimal(4e56),
+      unlocked() {
+        return hasUpgrade("p", "44");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    52: {
+      title: "The booster V6",
+      description: "mult points gain by 8 but Star gain^0.97",
+      cost: new Decimal(1e64),
+      unlocked() {
+        return hasUpgrade("p", "51");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    53: {
+      title: "The booster V7",
+      description: "mult points gain by 75 but Star gain^0.973",
+      cost: new Decimal(3e70),
+      unlocked() {
+        return hasUpgrade("p", "52");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    54: {
+      title: "The booster V8",
+      description: "mult points gain by 100 but Star gain^0.99",
+      cost: new Decimal(1e73),
+      unlocked() {
+        return hasUpgrade("p", "53");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    55: {
+      title: "The booster V9?????",
+      description: "mult points gain by 400 but Star gain^1.01",
+      cost: new Decimal(2e76),
+      unlocked() {
+        return hasUpgrade("p", "54");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    61: {
+      title: "Celestial?",
+      description: "mult planet gain by 3",
+      cost: new Decimal(1e75),
+      unlocked() {
+        return hasUpgrade("p", "55");
+      },
+    },
+    71: {
+      title: "Celestial now?",
+      description: "Unlock next buyable",
+      cost: new Decimal(2e80),
+      unlocked() {
+        return hasUpgrade("p", "55");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    72: {
+      title: "The booster?",
+      description: "Mult Star gain by 29 and Points^1.005",
+      cost: new Decimal(1e81),
+      unlocked() {
+        return hasUpgrade("p", "71");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    73: {
+      title: "The Star booster!",
+      description: "Mult Star gain by 4 and Points^1.001",
+      cost: new Decimal(1e82),
+      unlocked() {
+        return hasUpgrade("p", "72");
+      },
+      currencyInternalName: "points",
+      currencyDisplayName: "Points",
+    },
+    62: {
+      title: "Planet Planet",
+      description: "Mult Star gain by 4 and mult planet gain by 2.5 ",
+      cost: new Decimal(7e78),
+      unlocked() {
+        return hasUpgrade("p", "61");
+      },
+    },
+    63: {
+      title: "atom are points",
+      description: "Unlock a new layer ",
+      cost: new Decimal(1e81),
+      unlocked() {
+        return hasUpgrade("p", "62");
+      },
+    },
+    64: {
+      title: "Star come first? ",
+      description: "points gain based on atoms and mult Star gain by 67  ",
+      cost: new Decimal(2e81),
+      unlocked() {
+        return hasUpgrade("p", "63");
+      },
+      effect() {
+        let atom =
+          player.atom && player.atom.points
+            ? player.atom.points
+            : new Decimal(0);
+        if (atom.lt(2)) return new Decimal(1);
+        let excess = atom.sub(1);
+        return excess.div(1).add(1).log(1.5).plus(1).max(1);
+      },
+      effectDisplay() {
+        return "x" + format(upgradeEffect(this.layer, this.id));
+      },
+    },
   },
 
   buyables: {
@@ -487,9 +695,25 @@ addLayer("p", {
       },
       buy() {
         let cost = tmp[this.layer].buyables[this.id].cost;
-        player.p.points = player.p.points.sub(cost);
-        player[this.layer].buyables[this.id] =
-          player[this.layer].buyables[this.id].add(1);
+
+        if (hasUpgrade("planet", 24)) {
+          // 如果有免費效果：直接加等級，完全不扣點數！
+          setBuyableAmount(
+            this.layer,
+            this.id,
+            getBuyableAmount(this.layer, this.id).add(1),
+          );
+        } else {
+          // 正常情況：檢查點數並扣款
+          if (player.p.points.gte(cost)) {
+            player.p.points = player.p.points.sub(cost);
+            setBuyableAmount(
+              this.layer,
+              this.id,
+              getBuyableAmount(this.layer, this.id).add(1),
+            );
+          }
+        }
       },
       style: { height: "150px", width: "200px" },
     },
@@ -548,9 +772,25 @@ addLayer("p", {
       },
       buy() {
         let cost = tmp[this.layer].buyables[this.id].cost;
-        player.p.points = player.p.points.sub(cost);
-        player[this.layer].buyables[this.id] =
-          player[this.layer].buyables[this.id].add(1);
+
+        if (hasUpgrade("planet", 24)) {
+          // 如果有免費效果：直接加等級，完全不扣點數！
+          setBuyableAmount(
+            this.layer,
+            this.id,
+            getBuyableAmount(this.layer, this.id).add(1),
+          );
+        } else {
+          // 正常情況：檢查點數並扣款
+          if (player.p.points.gte(cost)) {
+            player.p.points = player.p.points.sub(cost);
+            setBuyableAmount(
+              this.layer,
+              this.id,
+              getBuyableAmount(this.layer, this.id).add(1),
+            );
+          }
+        }
       },
       style: { height: "150px", width: "200px" },
     },
@@ -569,8 +809,8 @@ addLayer("p", {
         }
         // ⭐️ 情況 B：購買次數超過 20 次（啟用收益遞減/Softcap）
         else {
-          let baseEff = Decimal.pow(2, 20); // 前 20 次累積的 2^20 倍
-          let extraAmount = x.sub(20); // 超過 20 次的數量
+          let baseEff = Decimal.pow(1.05, 35); // 前 20 次累積的 2^20 倍
+          let extraAmount = x.sub(35); // 超過 20 次的數量
           let extraEff = Decimal.pow(1.025, extraAmount); // 超過的部分每次只乘 1.5
 
           eff.first = baseEff.times(extraEff);
@@ -611,197 +851,104 @@ addLayer("p", {
       },
       buy() {
         let cost = tmp[this.layer].buyables[this.id].cost;
-        player.p.points = player.p.points.sub(cost);
-        player[this.layer].buyables[this.id] =
-          player[this.layer].buyables[this.id].add(1);
+
+        if (hasUpgrade("planet", 24)) {
+          // 如果有免費效果：直接加等級，完全不扣點數！
+          setBuyableAmount(
+            this.layer,
+            this.id,
+            getBuyableAmount(this.layer, this.id).add(1),
+          );
+        } else {
+          // 正常情況：檢查點數並扣款
+          if (player.p.points.gte(cost)) {
+            player.p.points = player.p.points.sub(cost);
+            setBuyableAmount(
+              this.layer,
+              this.id,
+              getBuyableAmount(this.layer, this.id).add(1),
+            );
+          }
+        }
       },
       style: { height: "150px", width: "200px" },
     },
-  },
-});
-addLayer("planet", {
-  name: "Planet", // 層級顯示名稱
-  symbol: "P", // 圖示符號
-  position: 0, // 在第二行（row 1）的位置
-  branches: ["p"],
-  startData() {
-    return {
-      unlocked: false,
-      points: new Decimal(0),
-    };
-  },
-  color: "#1e9ae8", // 綠色行星代表色
-  requires: new Decimal(4e46), // 需要 2e47 Star 才能解鎖重置
-  resource: "Planets", // 產出的資源名稱
-  baseResource: "Stars", // 消耗的基礎資源名稱（來自 Star 層級 'p'）
-  baseAmount() {
-    return player.p.points;
-  }, // 抓取 Star 層級的點數
-  type: "normal", // 標準重置類型
-  exponent: 0.15, // 獲取 Planet 的指數公式
-  gainMult() {
-    let mult = new Decimal(1);
-    if (hasUpgrade("p", "42")) mult = mult.times(1.5);
-    if (hasUpgrade("p", "43")) mult = mult.times(2);
+    14: {
+      title: "Points Booster^2",
+      cost(x = player[this.layer].buyables[this.id]) {
+        let cost = Decimal.pow(1.25, x.pow(1.05)).mul(1e80);
+        return cost.floor();
+      },
+      effect(x = player[this.layer].buyables[this.id]) {
+        let eff = {};
 
-    if (player.p && player.p.buyables && player.p.buyables[13]) {
-      let eff = buyableEffect("p", 13);
-      if (eff) {
-        // 提取 Buyable 的效果數值
-        let buyableEff = eff.first !== undefined ? eff.first : eff;
+        // ⭐️ 情況 A：購買次數小於等於 20 次
+        if (x.lte(50)) {
+          eff.first = Decimal.pow(1.1, x);
+        }
+        // ⭐️ 情況 B：購買次數超過 20 次（啟用收益遞減/Softcap）
+        else {
+          let baseEff = Decimal.pow(1.1, 50); // 前 20 次累積的 2^20 倍
+          let extraAmount = x.sub(50); // 超過 20 次的數量
+          let extraEff = Decimal.pow(1.02, extraAmount); // 超過的部分每次只乘 1.5
 
-        // ⭐️ 關鍵：必須把算出來的效果「乘」進去你的總倍率 mult 裡！
-        mult = mult.times(buyableEff);
-      }
-    }
-    return mult;
-  },
-  gainExp() {
-    return new Decimal(1);
-  },
-  row: 1, // 出現在第二行
-  hotkeys: [
-    {
-      key: "p",
-      description: "P: 重置並獲得 Planet",
-      onPress() {
-        if (canReset(this.layer)) doReset(this.layer);
-      },
-    },
-  ],
+          eff.first = baseEff.times(extraEff);
+        }
 
-  // 顯示條件：必須購買了 Star 層級（id 為 'p'）的 Upgrade 41
-  layerShown() {
-    return hasUpgrade("p", 41) || player[this.layer].unlocked;
-  },
+        return eff;
+      },
+      display() {
+        let data = tmp[this.layer].buyables[this.id];
+        let amount = player[this.layer].buyables[this.id];
 
-  // 真正能重置的條件：必須達到 2e47 Star 且買了 41 號升級
-  canReset() {
-    return player.p.points.gte(this.requires) && hasUpgrade("p", 41);
-  },
+        // 額外加上 Softcap 提醒標示（超過 20 次時提示玩家）
+        let softcapText = amount.gt(50) ? "\n(Softcapped: 1.1x -> 1.02x)" : "";
 
-  // 重置邏輯：Planet 重置會同時重置 Star 層級的所有 upgrades、buyables 與 points
-  doReset(resettingLayer) {
-    if (resettingLayer == this.layer) {
-      // 清空 Star 層級 (id: "p") 的所有數據
-      if (player.p) {
-        player.p.points = new Decimal(0);
-        player.p.upgrades = [];
-        player.p.buyables = {}; // 直接清空所有 buyables
-      }
-    }
-  },
-  milestones: {
-    0: {
-      requirementDescription: "1 Planet",
-      effectDescription: "Gain 10% of Star reset gain per second.",
-      done() {
-        return player.planet.points.gte(1);
-      },
-      effect() {
-        // 用 Decimal 包起來，或者直接用數學乘法
-        let gain = new Decimal(tmp.planet.resetGain);
-        return gain.times(0.1);
-      },
-      effectDisplay() {
-        return format(this.effect()) + " Stars/sec";
-      },
-    },
-    1: {
-      requirementDescription: "2 Planet",
-      effectDescription: "Gain 200% of Star reset gain per second.",
-      done() {
-        return player.planet.points.gte(2);
-      },
-      effect() {
-        // 用 Decimal 包起來，或者直接用數學乘法
-        let gain = new Decimal(tmp.planet.resetGain);
-        return gain.times(2.0);
-      },
-      effectDisplay() {
-        return format(this.effect()) + " Stars/sec";
-      },
-    },
-    2: {
-      requirementDescription: "14 Planet",
-      effectDescription: "Unlock More Star Upgrades",
-      done() {
-        return player.planet.points.gte(14);
-      },
-    },
-    3: {
-      requirementDescription: "30 Planet", // 依照你的需求設定解鎖條件
-      effectDescription: "Autobuy Star booster and Point booster buyables",
-      done() {
-        return player.planet.points.gte(30);
-      }, // 換成你的解鎖門檻
-    },
-    4: {
-      requirementDescription: "125 Planet", // 依照你的需求設定解鎖條件
-      effectDescription: "Star^1.025",
-      done() {
-        return player.planet.points.gte(125);
-      }, // 換成你的解鎖門檻
-    },
-    5: {
-      requirementDescription: "300 Planet", // 依照你的需求設定解鎖條件
-      effectDescription: "Point^1.025",
-      done() {
-        return player.planet.points.gte(300);
-      }, // 換成你的解鎖門檻
-    },
-  },
-  upgrades: {
-    11: {
-      title: "Planet Upgrades 1",
-      description: "Mult Star by 5 amd Points^1.06",
-      cost: new Decimal(1),
-    },
-    12: {
-      title: "Planet Upgrades 2",
-      description: "Mult Star gain based on planet",
-      cost: new Decimal(1),
-      // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
-      effect() {
-        // ⭐️ 關鍵：這裡改抓 Planet 層級的點數 (player.P.points)
-        let planet =
-          player.planet && player.planet.points
-            ? player.planet.points
-            : new Decimal(0);
-
-        // 計算加成公式（用 log 避免數值太爆炸，也可以改成 .pow()）
-        return planet.add(1).log(2).plus(1).max(1);
-      },
-      effectDisplay() {
-        // 在按鈕上顯示目前這顆升級提供了多少倍加成
-        return "x" + format(upgradeEffect(this.layer, this.id));
+        return (
+          "Cost: " +
+          formatWhole(data.cost) +
+          " Points\n" +
+          "Amount: " +
+          formatWhole(amount) +
+          "\n" +
+          "Boosts Points gain by " +
+          format(data.effect.first) +
+          "x" +
+          softcapText
+        );
       },
       unlocked() {
-        return hasUpgrade("planet", "11"); // 依據你的解鎖條件調整
+        return hasUpgrade("p", "71");
       },
-    },
-    13: {
-      title: "Planet Upgrades 3",
-      description: "Mult Points gain based on planet",
-      cost: new Decimal(20),
-      // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
-      effect() {
-        // ⭐️ 關鍵：這裡改抓 Planet 層級的點數 (player.P.points)
-        let planet =
-          player.planet && player.planet.points
-            ? player.planet.points
-            : new Decimal(0);
+      canAfford() {
+        return player.points.gte(tmp[this.layer].buyables[this.id].cost);
+      },
+      canBuy() {
+        return this.canAfford();
+      },
+      buy() {
+        let cost = tmp[this.layer].buyables[this.id].cost;
 
-        // 計算加成公式（用 log 避免數值太爆炸，也可以改成 .pow()）
-        return planet.add(1).log(10).plus(1).max(1);
+        if (hasUpgrade("planet", 24)) {
+          // 如果有免費效果：直接加等級，完全不扣點數！
+          setBuyableAmount(
+            this.layer,
+            this.id,
+            getBuyableAmount(this.layer, this.id).add(1),
+          );
+        } else {
+          // 正常情況：檢查點數並扣款
+          if (player.points.gte(cost)) {
+            player.points = player.points.sub(cost);
+            setBuyableAmount(
+              this.layer,
+              this.id,
+              getBuyableAmount(this.layer, this.id).add(1),
+            );
+          }
+        }
       },
-      effectDisplay() {
-        // 在按鈕上顯示目前這顆升級提供了多少倍加成
-        return "x" + format(upgradeEffect(this.layer, this.id));
-      },
-      unlocked() {
-        return hasUpgrade("planet", "12"); // 依據你的解鎖條件調整
-      },
+      style: { height: "150px", width: "200px" },
     },
   },
 });

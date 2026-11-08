@@ -2,7 +2,7 @@ let modInfo = {
   name: "The Celestial Tree",
   author: "nobody",
   pointsName: "points",
-  modFiles: ["layers.js", "tree.js"],
+  modFiles: ["layers.js", "tree.js", "planet.js", "Starmetal.js", "atom.js"],
 
   discordName: "",
   discordLink: "",
@@ -12,21 +12,25 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-  num: "1.1",
-  name: "A big layer 'Planet' Part 1",
+  num: "1.14",
+  name: "A big layer 'Planet' Part 2",
 };
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.14 A big layer 'Planet' Part 2</h3><br>
+		- Added a new layer.(Unfinished).<br>
+    - more upgrades.<br>
+
 <h3>v1.1 A big layer 'Planet' Part 1</h3><br>
-		- 新的層級.<br>
-    - 更多升級與可購買.<br>
-    - 將The Booster V2的加成加強 否則無法遊玩後面的內容.<br>
+		- Added a new layer.<br>
+    - more upgrades and buyables.<br>
+    - Improved Star Upgrade"The booster V2" effect.<br>
 
 	<h3>v1.05</h3><br>
-		- 更多升級與可購買.<br>
+		- more upgrades and buyables.<br>
 
     <h3>v0.87</h3><br>
-		- 做了一坨大便升級.<br>
+		- added things.<br>
 		- Added stuff.`;
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -66,10 +70,35 @@ function getPointGen() {
   if (hasMilestone("planet", "5")) gain = gain.pow(1.025);
   if (hasUpgrade("planet", "13"))
     gain = gain.times(upgradeEffect("planet", "13"));
+  if (hasUpgrade("p", "44")) gain = gain.pow(1.05);
+  if (hasUpgrade("planet", "14"))
+    gain = gain.times(upgradeEffect("planet", "14"));
+  if (hasUpgrade("p", "51")) gain = gain.times(2);
+  if (hasUpgrade("p", "52")) gain = gain.times(8);
+  if (hasMilestone("planet", "7")) gain = gain.times(1e6);
+  if (hasMilestone("planet", "8")) gain = gain.pow(0.96);
+  if (hasUpgrade("p", "53")) gain = gain.times(75);
+  if (hasUpgrade("p", "54")) gain = gain.times(100);
+  if (hasUpgrade("planet", "21"))
+    gain = gain.times(upgradeEffect("planet", "21"));
+  if (hasUpgrade("p", "55")) gain = gain.times(400);
+  if (hasUpgrade("p", "72")) gain = gain.pow(1.005);
+  if (hasUpgrade("p", "73")) gain = gain.pow(1.001);
+  if (hasUpgrade("planet", "22"))
+    gain = gain.times(upgradeEffect("planet", "22"));
 
   // Buyable 加成（改用 buyableEffect('p', 11).first 來正確提取數值）
   if (player.p && player.p.buyables && player.p.buyables[11]) {
     let eff = buyableEffect("p", 11);
+    if (eff) {
+      // 判斷 eff 是不是物件，如果是物件就拿 .first，否則直接用 eff
+      let mult = eff.first !== undefined ? eff.first : eff;
+      gain = gain.times(mult);
+    }
+  }
+
+  if (player.p && player.p.buyables && player.p.buyables[14]) {
+    let eff = buyableEffect("p", 14);
     if (eff) {
       // 判斷 eff 是不是物件，如果是物件就拿 .first，否則直接用 eff
       let mult = eff.first !== undefined ? eff.first : eff;
