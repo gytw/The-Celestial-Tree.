@@ -1,4 +1,5 @@
 addLayer("p", {
+  //:備用 player.points = player.points.add(1e25)
   name: "Star",
   symbol: "S",
   position: 0,
@@ -114,7 +115,7 @@ addLayer("p", {
     }
 
     if (hasMilestone("planet", "8")) {
-      exp = exp.times(1.04);
+      exp = exp.times(1.03);
     }
 
     if (hasUpgrade("p", "53")) {
@@ -396,16 +397,23 @@ addLayer("p", {
       unlocked() {
         return hasUpgrade("p", "32");
       },
+      // ⭐️ 告訴 TMT 這個升級要扣除的是全域的 points，而不是當前 layer 的資源
+      currencyLocation() {
+        return player;
+      },
+      currencyInternalName: "points",
       currencyDisplayName: "Points",
-      // ⭐️ 檢查玩家的 Points 是否大於或等於成本
+
+      // ⭐️ 讓 TMT 框架自動根據 cost 和 currencyInternalName 來判斷能不能買、要不要發光
       canAfford() {
         return player.points.gte(this.cost);
       },
-      // ⭐️ 點擊購買時，直接從 player.points 扣除成本
+
+      // ⭐️ 扣款邏輯
       pay() {
         player.points = player.points.sub(this.cost);
       },
-      // ⭐️ （選填）讓按鈕上顯示的文字清楚告訴玩家這需要花費 Points
+
       costDisplay() {
         return format(this.cost) + " Points";
       },
@@ -623,7 +631,7 @@ addLayer("p", {
     64: {
       title: "Star come first? ",
       description: "points gain based on atoms and mult Star gain by 67  ",
-      cost: new Decimal(2e81),
+      cost: new Decimal(5e84),
       unlocked() {
         return hasUpgrade("p", "63");
       },

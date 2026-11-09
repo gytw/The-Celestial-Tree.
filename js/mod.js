@@ -12,11 +12,16 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-  num: "1.14",
-  name: "A big layer 'Planet' Part 2",
+  num: "1.14.1",
+  name: "A big layer 'Planet' bug fix",
 };
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.14.1 A big layer 'Planet' bug fix</h3><br>
+	  - Fixed 'The booster V3' upgrade doesn't light up..<br>
+    - Adjusted the requirements and effects for certain planet upgrades and milestones..<br>
+    - Reduced the points required to unlock Atom..<br>
+
 <h3>v1.14 A big layer 'Planet' Part 2</h3><br>
 		- Added a new layer.(Unfinished).<br>
     - more upgrades.<br>
@@ -76,7 +81,7 @@ function getPointGen() {
   if (hasUpgrade("p", "51")) gain = gain.times(2);
   if (hasUpgrade("p", "52")) gain = gain.times(8);
   if (hasMilestone("planet", "7")) gain = gain.times(1e6);
-  if (hasMilestone("planet", "8")) gain = gain.pow(0.96);
+  if (hasMilestone("planet", "8")) gain = gain.pow(0.98);
   if (hasUpgrade("p", "53")) gain = gain.times(75);
   if (hasUpgrade("p", "54")) gain = gain.times(100);
   if (hasUpgrade("planet", "21"))

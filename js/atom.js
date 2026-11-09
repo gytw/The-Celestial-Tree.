@@ -10,14 +10,14 @@ addLayer("atom", {
     };
   },
   color: "#51efba", // 綠色行星代表色
-  requires: new Decimal(1e90), // 需要 2e47 Star 才能解鎖重置
+  requires: new Decimal(1e86), // 需要 2e47 Star 才能解鎖重置
   resource: "atoms", // 產出的資源名稱
   baseResource: "points", // 消耗的基礎資源名稱（來自 Star 層級 'p'）
   baseAmount() {
     return player.points;
   }, // 抓取 Star 層級的點數
   type: "normal", // 標準重置類型
-  exponent: 0.05, // 獲取 Planet 的指數公式
+  exponent: 0.03, // 獲取 Planet 的指數公式
   gainMult() {
     let mult = new Decimal(1);
     if (hasUpgrade("atom", "12")) mult = mult.times(3);
@@ -65,6 +65,9 @@ addLayer("atom", {
       title: "Atoms are very important",
       description: "Mult atom gain by 3 and Star^1.03",
       cost: new Decimal(3),
+      unlocked() {
+        return hasUpgrade("atom", "11");
+      },
     },
   },
 });

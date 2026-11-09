@@ -151,16 +151,16 @@ addLayer("planet", {
     },
     8: {
       requirementDescription: "5e4 Planet", // 依照你的需求設定解鎖條件
-      effectDescription: "Star^1.04 but points^0.96",
+      effectDescription: "Star^1.03 but points^0.98",
       done() {
         return player.planet.points.gte(5e4);
       }, // 換成你的解鎖門檻
     },
     9: {
-      requirementDescription: "2e6 Planet", // 依照你的需求設定解鎖條件
+      requirementDescription: "5e7 Planet", // 依照你的需求設定解鎖條件
       effectDescription: "Star gain based on planets",
       done() {
-        return player.planet.points.gte(2e6);
+        return player.planet.points.gte(5e7);
       },
       effect() {
         let planet = player.planet.points
@@ -183,17 +183,17 @@ addLayer("planet", {
       },
     },
     10: {
-      requirementDescription: "1e9 Planet", // 依照你的需求設定解鎖條件
+      requirementDescription: "5e9 Planet", // 依照你的需求設定解鎖條件
       effectDescription: "Autobuy planet booster and Points booster^2 buyables",
       done() {
-        return player.planet.points.gte(1e9);
+        return player.planet.points.gte(5e9);
       }, // 換成你的解鎖門檻
     },
   },
   upgrades: {
     11: {
       title: "Planet Upgrades 1",
-      description: "Mult Star by 5 amd Points^1.06",
+      description: "Mult Star by 5 and Points^1.06",
       cost: new Decimal(1),
     },
     12: {
@@ -243,7 +243,7 @@ addLayer("planet", {
       },
     },
     14: {
-      title: "points boosst points",
+      title: "points boost points",
       description: "Mult Points gain based on points",
       cost: new Decimal(1500),
       // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
@@ -262,7 +262,7 @@ addLayer("planet", {
       },
     },
     15: {
-      title: "Star boosst Star",
+      title: "Star boost Star",
       description: "Mult Star gain based on Star",
       cost: new Decimal(1e6),
       // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
@@ -281,9 +281,9 @@ addLayer("planet", {
       },
     },
     21: {
-      title: "Star boosst points",
+      title: "Star boost points",
       description: "Mult points gain based on Star",
-      cost: new Decimal(2e7),
+      cost: new Decimal(2.5e8),
       // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
       effect() {
         let Star = player.p.points ? player.p.points : new Decimal(0);
@@ -300,9 +300,9 @@ addLayer("planet", {
       },
     },
     22: {
-      title: "Star boosst points^2",
+      title: "Star boost points^2",
       description: "Mult points gain based on Star again",
-      cost: new Decimal(5e7),
+      cost: new Decimal(1e9),
       // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
       effect() {
         let Star = player.p.points ? player.p.points : new Decimal(0);
@@ -319,9 +319,9 @@ addLayer("planet", {
       },
     },
     23: {
-      title: "points boosst Star",
+      title: "points boost Star",
       description: "Mult Star gain based on points ",
-      cost: new Decimal(1e9),
+      cost: new Decimal(9.5e9),
       // 抓取 Planet 的點數（或者抓 player.points，看你要用哪種資源來加成）
       effect() {
         let points = player.points ? player.points : new Decimal(0);
@@ -340,7 +340,7 @@ addLayer("planet", {
     24: {
       title: "Auto free",
       description: "buy first four stars buyables doesn't comsume resorces",
-      cost: new Decimal(1.5e9),
+      cost: new Decimal(3.5e10),
       unlocked() {
         return hasUpgrade("planet", "23"); // 依據你的解鎖條件調整
       },
