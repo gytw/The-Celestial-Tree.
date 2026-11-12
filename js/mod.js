@@ -2,7 +2,7 @@ let modInfo = {
   name: "The Celestial Tree",
   author: "nobody",
   pointsName: "points",
-  modFiles: ["layers.js", "tree.js", "planet.js", "Starmetal.js", "atom.js"],
+  modFiles: ["layers.js", "tree.js", "planet.js", "atom.js", "galaxy.js"],
 
   discordName: "",
   discordLink: "",
@@ -12,15 +12,19 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-  num: "1.14.1",
-  name: "A big layer 'Planet' bug fix",
+  num: "1.14.2",
+  name: "Planet is too small. New layer is coming.",
 };
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.14.2 Planet is too small. New layer is coming.</h3><br>
+	  - more upgrades and buyables.<br>
+    - Added a new layer(Unfinished).<br>
 <h3>v1.14.1 A big layer 'Planet' bug fix</h3><br>
-	  - Fixed 'The booster V3' upgrade doesn't light up..<br>
-    - Adjusted the requirements and effects for certain planet upgrades and milestones..<br>
-    - Reduced the points required to unlock Atom..<br>
+	  - Fixed 'The booster V3' upgrade doesn't light up.<br>
+    - Adjusted the requirements and effects for certain planet upgrades and milestones.<br>
+    - Reduced the points required to unlock Atom.<br>
+    - endgame - 1e13 planets.<br>
 
 <h3>v1.14 A big layer 'Planet' Part 2</h3><br>
 		- Added a new layer.(Unfinished).<br>
@@ -91,6 +95,18 @@ function getPointGen() {
   if (hasUpgrade("p", "73")) gain = gain.pow(1.001);
   if (hasUpgrade("planet", "22"))
     gain = gain.times(upgradeEffect("planet", "22"));
+  if (hasUpgrade("atom", "21")) gain = gain.times(upgradeEffect("atom", "21"));
+  if (hasUpgrade("atom", "32")) gain = gain.times(1e4);
+  if (hasUpgrade("atom", "35")) gain = gain.times(1e7);
+  if (hasUpgrade("galaxy", "11")) gain = gain.times(2.5);
+  if (player.atom && player.atom.buyables && player.atom.buyables[11]) {
+    let eff = buyableEffect("atom", 11);
+    if (eff) {
+      // 判斷 eff 是不是物件，如果是物件就拿 .first，否則直接用 eff
+      let mult = eff.first !== undefined ? eff.first : eff;
+      gain = gain.times(mult);
+    }
+  }
 
   // Buyable 加成（改用 buyableEffect('p', 11).first 來正確提取數值）
   if (player.p && player.p.buyables && player.p.buyables[11]) {

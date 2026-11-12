@@ -25,6 +25,11 @@ addLayer("planet", {
     if (hasUpgrade("p", "44")) mult = mult.times(2);
     if (hasUpgrade("p", "61")) mult = mult.times(3);
     if (hasUpgrade("p", "62")) mult = mult.times(2.5);
+    if (hasUpgrade("atom", "25")) mult = mult.times(1e5);
+    if (hasUpgrade("atom", "42")) mult = mult.times(1e11);
+    if (hasMilestone("galaxy", "0")) mult = mult.times(1.5);
+    if (hasUpgrade("atom", "45")) mult = mult.times(14);
+    if (hasUpgrade("galaxy", "12")) mult = mult.times(2.5);
 
     if (player.p && player.p.buyables && player.p.buyables[13]) {
       let eff = buyableEffect("p", 13);
@@ -343,6 +348,25 @@ addLayer("planet", {
       cost: new Decimal(3.5e10),
       unlocked() {
         return hasUpgrade("planet", "23"); // 依據你的解鎖條件調整
+      },
+    },
+    25: {
+      title: "Atom free?",
+      description:
+        "Mult atom gain by 3, boost atom gain based on star and unlock more atom upgrades.",
+      cost: new Decimal(3.5e12),
+      unlocked() {
+        return hasUpgrade("planet", "24"); // 依據你的解鎖條件調整
+      },
+      effect() {
+        let Star = player.p.points ? player.p.points : new Decimal(0);
+        if (Star.lt(1e102)) return new Decimal(1);
+        let excess = Star.sub(102);
+        return excess.div(1e102).add(1).pow(0.05).log(1.5).plus(1).max(1);
+      },
+      effectDisplay() {
+        // 在按鈕上顯示目前這顆升級提供了多少倍加成
+        return "x" + format(upgradeEffect(this.layer, this.id));
       },
     },
   },

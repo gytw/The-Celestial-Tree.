@@ -30,6 +30,7 @@ addLayer("p", {
     let mult = new Decimal(1);
 
     // Upgrade 加成
+    if (hasUpgrade("galaxy", "11")) mult = mult.times(2.5);
     if (hasUpgrade("p", "13")) mult = mult.times(upgradeEffect("p", "13"));
     if (hasUpgrade("p", "14")) mult = mult.times(1.5);
     if (hasUpgrade("p", "16")) mult = mult.times(upgradeEffect("p", "16"));
@@ -66,6 +67,13 @@ addLayer("p", {
     if (hasUpgrade("planet", "23")) {
       mult = mult.times(upgradeEffect("planet", "23"));
     }
+    if (hasUpgrade("atom", "13")) {
+      mult = mult.times(upgradeEffect("atom", "13"));
+    }
+    if (hasUpgrade("atom", "14")) {
+      mult = mult.times(upgradeEffect("atom", "14"));
+    }
+    if (hasUpgrade("atom", "33")) mult = mult.times(40);
     return mult;
   },
 
@@ -160,7 +168,7 @@ addLayer("p", {
   autoUpgradeTimer: 0,
 
   update(diff) {
-    // 1️⃣ 如果擁有星星自己的 13 號升級，自動買星星層級的升級（第 1 到 7 行）
+    // 1️⃣ 星星升級自動購買（保持不動）
     if (hasUpgrade("atom", 11)) {
       for (let r = 1; r <= 7; r++) {
         for (let c = 1; c <= 7; c++) {
@@ -176,17 +184,28 @@ addLayer("p", {
       }
     }
 
-    // 2️⃣ 檢查 Planet 的里程碑 3，自動購買星星層級 ("S") 的 11、12 號 Buyables
-    // （這裡的大小寫 "P" 請依你的 Planet 實際代碼為主，確保是大寫或小寫一致）
+    // 2️⃣ 判斷是否有 Atom 41 升級
+    let hasAtom41 = hasUpgrade("atom", 41);
+    let count = hasAtom41 ? 100 : 1; // 有 Atom 41 就循環 100 次（買到最大），沒有就買 1 次
+
+    // 3️⃣ 星星層級的 11、12 號 Buyables (由 Planet 里程碑 3 解鎖)
     if (hasMilestone("planet", 3)) {
-      buyBuyable("p", 11);
-      buyBuyable("p", 12);
+      for (let i = 0; i < count; i++) {
+        buyBuyable(this.layer, 11);
+      }
+      for (let i = 0; i < count; i++) {
+        buyBuyable(this.layer, 12);
+      }
     }
 
-    // 3️⃣ 檢查 Planet 的里程碑 10，自動購買星星層級 ("S") 的 13、14 號 Buyables
+    // 4️⃣ 星星層級的 13、14 號 Buyables (由 Planet 里程碑 10 解鎖)
     if (hasMilestone("planet", 10)) {
-      buyBuyable("p", 13);
-      buyBuyable("p", 14);
+      for (let i = 0; i < count; i++) {
+        buyBuyable(this.layer, 13);
+      }
+      for (let i = 0; i < count; i++) {
+        buyBuyable(this.layer, 14);
+      }
     }
   },
 
@@ -210,7 +229,7 @@ addLayer("p", {
       content: [
         "blank",
         // 這裡維持只顯示第 3 行（31 號升級）
-        ["upgrades", [3, 5, 7]],
+        ["upgrades", [3, 5, 7, 8]],
       ],
     },
   },
