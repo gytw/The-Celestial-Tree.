@@ -354,7 +354,7 @@ addLayer("planet", {
       title: "Atom free?",
       description:
         "Mult atom gain by 3, boost atom gain based on star and unlock more atom upgrades.",
-      cost: new Decimal(1e12),
+      cost: new Decimal(3.5e12),
       unlocked() {
         return hasUpgrade("planet", "24"); // 依據你的解鎖條件調整
       },
