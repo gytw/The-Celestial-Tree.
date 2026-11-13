@@ -97,7 +97,7 @@ addLayer("galaxy", {
     },
     1: {
       requirementDescription: "2 total galaxy",
-      effectDescription: "Coming soon!(V1.14.2 endgame)",
+      effectDescription: "Coming soon!(V1.14.3 endgame)",
       done() {
         return player.galaxy?.total?.gte(2) ?? false;
       },
@@ -114,7 +114,7 @@ addLayer("galaxy", {
       description: "Mult planet gain by 2.5 ",
       cost: new Decimal(1),
       unlocked() {
-        return hasUpgrade("galaxy", "11");
+        return hasUpgrade("galaxy", "11") && hasMilestone("galaxy", "1");
       },
     },
   },
