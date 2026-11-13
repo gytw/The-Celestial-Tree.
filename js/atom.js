@@ -28,7 +28,7 @@ addLayer("atom", {
     if (hasUpgrade("planet", "25")) {
       mult = mult.times(upgradeEffect("planet", "25"));
     }
-    if (hasUpgrade("atom", "13")) mult = mult.div(1.5);
+    if (hasUpgrade("atom", "13")) mult = mult.div(1.25);
     if (hasUpgrade("atom", "14")) mult = mult.div(1.25);
     if (hasUpgrade("atom", "22")) mult = mult.times(1e4);
     if (hasUpgrade("atom", "23")) mult = mult.times(1e5);
@@ -115,16 +115,16 @@ addLayer("atom", {
     },
     13: {
       title: "Atoms boost star",
-      description: "Mult star gain based on atom but atom /1.5",
+      description: "Mult star gain based on atom but atom /1.25",
       cost: new Decimal(1e3),
       unlocked() {
         return hasUpgrade("planet", "25");
       },
       effect() {
         let atom = player.atom.points ? player.atom.points : new Decimal(0);
-        if (atom.lt(1e3)) return new Decimal(1);
-        let excess = atom.sub(3);
-        return excess.div(1e3).add(1).pow(0.1).plus(1).max(1);
+        if (atom.lt(1)) return new Decimal(1);
+        let excess = atom.sub(1);
+        return excess.div(1000).add(1).pow(0.1).plus(1).max(1);
       },
       effectDisplay() {
         // 在按鈕上顯示目前這顆升級提供了多少倍加成
@@ -140,9 +140,9 @@ addLayer("atom", {
       },
       effect() {
         let atom = player.atom.points ? player.atom.points : new Decimal(0);
-        if (atom.lt(500)) return new Decimal(1);
-        let excess = atom.sub(0);
-        return excess.div(500).add(1).pow(0.05).plus(1).max(1);
+        if (atom.lt(1)) return new Decimal(1);
+        let excess = atom.sub(1);
+        return excess.div(250).add(1).pow(0.05).plus(1).max(1);
       },
       effectDisplay() {
         // 在按鈕上顯示目前這顆升級提供了多少倍加成

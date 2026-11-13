@@ -1,6 +1,6 @@
 let modInfo = {
   name: "The Celestial Tree",
-  author: "nobody",
+  author: "gytw",
   pointsName: "points",
   modFiles: ["layers.js", "tree.js", "planet.js", "atom.js", "galaxy.js"],
 
@@ -12,11 +12,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-  num: "1.14.2",
-  name: "Planet is too small. New layer is coming.",
+  num: "1.14.3",
+  name: "Upgrades Balance.",
 };
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.14.3 Upgrades Balance.</h3><br>
+	  - Improved 'Atoms boost star' and 'Atoms boost star again?' upgrades formula.<br>
+    - Reduced 'Atom free?' upgrade cost.<br>
 <h3>v1.14.2 Planet is too small. New layer is coming.</h3><br>
 	  - more upgrades and buyables.<br>
     - Added a new layer(Unfinished).<br>
